@@ -4,7 +4,9 @@ Original work by Uber research
 - [https://github.com/uber-research/poet](https://github.com/uber-research/poet)
 - [https://eng.uber.com/poet-open-ended-deep-learning/](https://eng.uber.com/poet-open-ended-deep-learning/)
 
-## Parameters used
+## Run experiment
+
+Build a Lithops container runtime using `Dockerfile.lambda`. Replace `$WORKERS` with the desired number of parallel workers.
 
 ```
 python master.py . --batch_size=1 --batches_per_chunk=512 --eval_batches_per_step=5 --normalize_grads_by_noise_std --returns_normalization=centered_ranks --envs stump pit roughness --num_workers=$WORKERS --n_iterations=10
