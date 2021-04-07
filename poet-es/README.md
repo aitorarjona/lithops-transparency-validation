@@ -1,4 +1,4 @@
-# POET Evolution Estrategies validation
+# POET Evolution Strategies validation
 
 Original work by Uber research
 - [https://github.com/uber-research/poet](https://github.com/uber-research/poet)
