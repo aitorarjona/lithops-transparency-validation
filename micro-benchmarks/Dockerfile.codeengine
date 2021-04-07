@@ -1,0 +1,14 @@
+FROM python:3.8-buster
+
+ADD requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+ADD experiments/ .
+ADD examples/ .
+ADD config .
+
+COPY fiber/ fiber/
+COPY lithops/ lithops/
+
+# ENV FIBER_LOG_LEVEL=debug
+ENV FIBER_LOG_FILE=stdout

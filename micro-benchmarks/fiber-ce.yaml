@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fiber-ce
+  labels:
+    name: fiber-ce
+spec:
+  serviceAccountName: 5iar87jsh5i-manager
+  automountServiceAccountToken: true
+  restartPolicy: Never
+  containers:
+  - name: fiber-executor
+    image: docker.io/aitorarjona/fiber-test:0.3
+    command: ["python"]
+    args: ["pi_processes.py", "-b=fiber", "--workers=96", "--batch-size=50000000"]
+    env:
+      - name: FIBER_KUBERNETES_NAMESPACE
+        value: 5iar87jsh5i
+    resources:
+      requests:
+        memory: "1024Mi"
+        cpu: "1"
+      limits:
+        memory: "1024Mi"
+        cpu: "1"
+    
