@@ -1,0 +1,1 @@
+# lithops-transparency-validation
