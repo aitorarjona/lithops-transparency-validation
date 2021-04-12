@@ -47,6 +47,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--backend', default='mp', choices=['mp', 'lithops', 'fiber'])
     parser.add_argument('--workers', default=4, type=int)
+    parser.add_argument('--sample-points', default=None, type=int)
     parser.add_argument('--batch-size', default=1000, type=int)
     args = parser.parse_args()
 
@@ -62,4 +63,5 @@ if __name__ == '__main__':
         from fiber import config as fiber_config
         import fiber as mp
 
-    measure(mp, workers=args.workers, batch_size=args.batch_size)
+    batch_size = args.sample_points // args.workers if args.sample_points else args.batch_size
+    measure(mp, workers=args.workers, batch_size=batch_size)
