@@ -26,7 +26,9 @@ if __name__ == '__main__':
     elif args.backend == 'lithops':
         import lithops
         import lithops.multiprocessing as mp
+        from lithops.multiprocessing import config as mp_config
         lithops.utils.setup_lithops_logger(logging.DEBUG)
+        mp_config.set_parameter(mp_config.EXPORT_EXECUTION_DETAILS, '.')
     elif args.backend == 'fiber':
         logging.basicConfig(level=logging.DEBUG)
         logging.getLogger('kubernetes').setLevel(logging.CRITICAL)
