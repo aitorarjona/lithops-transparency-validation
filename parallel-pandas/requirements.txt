@@ -1,0 +1,18 @@
+gunicorn
+gevent
+flask
+cloudpickle
+ps-mem
+tblib
+PyYAML
+kubernetes
+dill
+textblob
+numpy
+scikit-learn
+scipy
+pandas
+ibm-cos-sdk
+redis
+pika == 0.13.1
+pynng
