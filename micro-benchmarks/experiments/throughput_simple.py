@@ -2,6 +2,7 @@ import os
 import time
 import hashlib
 import argparse
+import logging
 
 
 def sender(pipe, dict_result, batches, batch_size):
@@ -43,7 +44,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-b',
                         '--backend',
-                        default='mp',
+                        default='lithops',
                         choices=['mp', 'lithops', 'fiber'])
     parser.add_argument('--batches', default=1000, type=int)
     parser.add_argument('--batch-size', default=1_000_000, type=int)
@@ -61,6 +62,8 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG)
         logging.getLogger('kubernetes').setLevel(logging.CRITICAL)
         import fiber as mp
+
+    print('Total data to transmit: {} MB'.format((args.batches * args.batch_size) / 1e6))
 
     c1, c2 = mp.Pipe()
     man = mp.Manager()
