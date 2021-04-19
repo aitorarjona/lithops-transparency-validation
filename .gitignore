@@ -1,6 +1,10 @@
 # IDE
 .vscode/
 
+# Archives
+*.zip
+*.bz2
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

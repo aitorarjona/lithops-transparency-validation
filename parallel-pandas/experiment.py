@@ -16,6 +16,7 @@ if __name__ == '__main__':
 
     pandarallel.initialize(use_memory_fs=False, nb_workers=workers)
 
+    # Download the dataset from https://www.kaggle.com/kazanova/sentiment140
     df = pd.read_csv('tweeter.csv', header=None, sep=',', names=['target', 'id', 'date', 'flag', 'user', 'text'], engine='python')
     print(df.info)
     serie = df['text']
