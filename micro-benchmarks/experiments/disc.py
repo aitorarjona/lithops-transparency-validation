@@ -98,7 +98,7 @@ def compute_rate_stat(results):
     return rates.mean(), rates.std()
 
 
-def compute_peak_rate(results, start_time):
+def compute_peak_rate(results, start_time, end_time):
 
     def compute_times_rates(start_time, d):
         x = np.array(d)
@@ -120,9 +120,8 @@ def compute_peak_rate(results, start_time):
         return runtime_rate.sum(axis=0)
 
     mb_rates = [(res['start_time'], res['end_time'], res['mb_rate']) for res in results]
-    max_seconds = int(max([mr[1] - start_time for mr in mb_rates]) * 1.2)
-    max_seconds = 8 * round(max_seconds / 8)
-    runtime_bins = np.linspace(0, max_seconds, max_seconds * 10)
+    seconds = round(end_time - start_time) + 1
+    runtime_bins = np.linspace(0, seconds, seconds * 10)
     runtime_rate = compute_times_rates(start_time, mb_rates)
 
     return runtime_rate.max()
@@ -163,7 +162,7 @@ def write(mb_per_file, number, key_prefix):
     mb_rate = number * mb_per_file / (write_end - write_start)
 
     mean, std = compute_rate_stat(results)
-    peak_rate = compute_peak_rate(results, start_time)
+    peak_rate = compute_peak_rate(results, write_start, write_end)
 
     res = {'start_time': start_time,
            'total_time': total_time,
@@ -214,7 +213,7 @@ def read(number, keylist_raw, mb_per_file):
     mb_rate = number * mb_per_file / (read_end - read_start)
 
     mean, std = compute_rate_stat(results)
-    peak_rate = compute_peak_rate(results, start_time)
+    peak_rate = compute_peak_rate(results, read_start, read_end)
 
     res = {'start_time': start_time,
            'total_time': total_time,
@@ -238,7 +237,7 @@ def run(mb_per_file, number, key_prefix, outdir, name):
 
     print('Executing Write Test:')
     res_write = write(mb_per_file, number, key_prefix)
-    pickle.dump(res_write, open('{}/{}_write.pickle'.format(outdir, name), 'wb'), -1)
+    #pickle.dump(res_write, open('{}/{}_write.pickle'.format(outdir, name), 'wb'), -1)
 
     print('Sleeping 20 seconds...')
     time.sleep(20)
@@ -246,7 +245,7 @@ def run(mb_per_file, number, key_prefix, outdir, name):
     print('Executing Read Test:')
     keynames = res_write['keynames']
     res_read = read(number, keynames, mb_per_file)
-    pickle.dump(res_read, open('{}/{}_read.pickle'.format(outdir, name), 'wb'), -1)
+    #pickle.dump(res_read, open('{}/{}_read.pickle'.format(outdir, name), 'wb'), -1)
 
     delete_temp_data(keynames)
 
