@@ -2,10 +2,7 @@ import uuid
 import numpy as np
 import time
 import pickle
-import click
 import argparse
-
-
 
 
 
@@ -104,7 +101,6 @@ def compute_rate_stat(results):
 def compute_peak_rate(results, start_time):
 
     def compute_times_rates(start_time, d):
-        runtime_bins = np.linspace(0, 50, 500)
         x = np.array(d)
         tzero = start_time
         tr_start_time = x[:, 0] - tzero
@@ -124,7 +120,9 @@ def compute_peak_rate(results, start_time):
         return runtime_rate.sum(axis=0)
 
     mb_rates = [(res['start_time'], res['end_time'], res['mb_rate']) for res in results]
-
+    max_seconds = int(max([mr[1] - start_time for mr in mb_rates]) * 1.2)
+    max_seconds = 8 * round(max_seconds / 8)
+    runtime_bins = np.linspace(0, max_seconds, max_seconds * 10)
     runtime_rate = compute_times_rates(start_time, mb_rates)
 
     return runtime_rate.max()
