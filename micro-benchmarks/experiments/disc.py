@@ -1,10 +1,8 @@
-import uuid
-import numpy as np
-import time
-import pickle
 import argparse
-
-
+import time
+import uuid
+import gc
+import numpy as np
 
 MB = 1000 ** 2
 
@@ -137,6 +135,7 @@ def write_object(key_name, mb_per_file, chunk_size=100 * MB):
         while data:
             f.write(data)
             data = d.read(chunk_size)
+            gc.collect()
         f.flush()
         end_time = time.time()
 
@@ -184,6 +183,7 @@ def read_object(key_name, mb_per_file, chunk_size=1*MB):
         data = f.read(chunk_size)
         while data:
             data = f.read(chunk_size)
+            gc.collect()
         end_time = time.time()
 
     mb_rate = mb_per_file/(end_time-start_time)
@@ -247,8 +247,6 @@ def run(mb_per_file, number, key_prefix, outdir, name):
     res_read = read(number, keynames, mb_per_file)
     #pickle.dump(res_read, open('{}/{}_read.pickle'.format(outdir, name), 'wb'), -1)
 
-    delete_temp_data(keynames)
-
     print(f'Mean writing rate: {res_write["mb_rate"]} MB/s')
     print(f'Peak writing rate: {res_write["peak_rate"]} MB/s')
     print(f'Mean/std functions writing rate: {res_write["mean_fn_rate"]} / {res_write["std_fn_rate"]}  MB/s')
@@ -256,6 +254,8 @@ def run(mb_per_file, number, key_prefix, outdir, name):
     print(f'Mean reading rate: {res_read["mb_rate"]} MB/s')
     print(f'Peak reading rate: {res_read["peak_rate"]} MB/s')
     print(f'Mean/std functions reading rate: {res_read["mean_fn_rate"]} / {res_read["std_fn_rate"]} MB/s')
+
+    delete_temp_data(keynames)
 
 
 if __name__ == '__main__':
