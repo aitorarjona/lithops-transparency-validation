@@ -20,6 +20,9 @@ import numpy as np
 from poet_distributed.es import initialize_master_fiber
 from poet_distributed.poet_algo import MultiESOptimizer
 
+from lithops.utils import setup_lithops_logger
+setup_lithops_logger(log_level='DEBUG')
+
 
 def run_main(args):
 

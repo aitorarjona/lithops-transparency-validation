@@ -61,6 +61,9 @@ if __name__ == '__main__':
     if args.backend == 'lithops':
         from sklearn.model_selection import GridSearchCV
         from lithops.util.joblib import register_lithops
+        from lithops.multiprocessing import config as mp_config
+        mp_config.set_parameter(mp_config.EXPORT_EXECUTION_DETAILS, '.')
+
         register_lithops()
         grid_search = GridSearchCV(pipeline,
                                    parameters,
@@ -89,13 +92,3 @@ if __name__ == '__main__':
         grid_search.fit(X, y)
         total_time = time() - t0
         print("Done in {}".format(total_time))
-
-    if refit:
-        print("Best score: %0.3f" % grid_search.best_score_)
-        print("Best parameters set:")
-        best_parameters = grid_search.best_estimator_.get_params()
-        for param_name in sorted(parameters.keys()):
-            print("\t%s: %r" % (param_name, best_parameters[param_name]))
-
-if __name__ == "__main__":
-    main()
