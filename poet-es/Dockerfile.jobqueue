@@ -9,12 +9,12 @@ ARG FUNCTION_DIR
 # Install aws-lambda-cpp build dependencies
 RUN apt-get update && \
   apt-get install -y \
-    g++ \
-    make \
-    cmake \
-    unzip \
-    libcurl4-openssl-dev \
-    swig
+  g++ \
+  make \
+  cmake \
+  unzip \
+  libcurl4-openssl-dev \
+  swig
 
 # Copy function code
 RUN mkdir -p ${FUNCTION_DIR}
@@ -22,24 +22,13 @@ RUN mkdir -p ${FUNCTION_DIR}
 # Install the function's dependencies
 RUN pip install \
     --target ${FUNCTION_DIR} \
+        lithops==2.3.1 \
         awslambdaric \
         boto3 \
-        redis \
-        httplib2 \
-        requests \
-        numpy \
-        scipy \
-        pandas \
-        pika==0.13.1 \
-        kafka-python \
-        cloudpickle \
-        ps-mem \
-        tblib \
+        msgpack \
+        diskcache \
         neat-python \
-        gym[box2d] \
-	diskcache \
-	msgpack
-
+        gym[box2d]
 
 
 FROM python:3.8-buster
@@ -52,17 +41,14 @@ WORKDIR ${FUNCTION_DIR}
 # Copy in the built dependencies
 COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 
-# Add Lithops
-RUN mkdir lithops
-COPY lithops_lambda.zip ${FUNCTION_DIR}
-RUN unzip lithops_lambda.zip && rm lithops_lambda.zip
+# Add Lithops worker pool handler
+RUN mkdir lithops_workerpool
+COPY lithops_workerpool_lambda.zip ${FUNCTION_DIR}
+COPY lambda_entrypoint.py ${FUNCTION_DIR}
+RUN unzip -j -d worker lithops_workerpool_lambda.zip && rm lithops_workerpool_lambda.zip
 
 # Put your dependencies here, using RUN pip install... or RUN apt install...
-# RUN apt-get update && \
-#     apt-get install -y \
-#         swig
-
 COPY poet_distributed poet_distributed
 
 ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
-CMD [ "__main__.lambda_handler" ]
+CMD [ "lambda_entrypoint.lambda_handler" ]

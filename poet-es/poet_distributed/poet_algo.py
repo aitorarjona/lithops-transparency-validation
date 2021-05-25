@@ -56,6 +56,7 @@ class MultiESOptimizer:
         # import fiber as mp
         
         import lithops.multiprocessing as mp
+        from lithops_workerpool.multiprocessing.pool import StatefulPool
         
         #####################################################################
 
@@ -69,9 +70,8 @@ class MultiESOptimizer:
                 "niches": manager.dict(),
                 "thetas": manager.dict(),
         }
-        self.fiber_pool = mp_ctx.Pool(args.num_workers, initializer=initialize_worker_fiber,
-                initargs=(self.fiber_shared["thetas"],
-                    self.fiber_shared["niches"]))
+        #self.fiber_pool = mp_ctx.Pool(args.num_workers, initializer=initialize_worker_fiber, initargs=(self.fiber_shared["thetas"], self.fiber_shared["niches"]))
+        self.fiber_pool = StatefulPool(args.num_workers, initializer=initialize_worker_fiber, initargs=(self.fiber_shared["thetas"], self.fiber_shared["niches"]))
 
         self.ANNECS = 0
         self.env_registry = OrderedDict()

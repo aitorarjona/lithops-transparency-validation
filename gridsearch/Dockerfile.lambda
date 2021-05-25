@@ -9,12 +9,11 @@ ARG FUNCTION_DIR
 # Install aws-lambda-cpp build dependencies
 RUN apt-get update && \
   apt-get install -y \
-    g++ \
-    make \
-    cmake \
-    unzip \
-    libcurl4-openssl-dev \
-    swig
+  g++ \
+  make \
+  cmake \
+  unzip \
+  libcurl4-openssl-dev
 
 # Copy function code
 RUN mkdir -p ${FUNCTION_DIR}
@@ -30,16 +29,13 @@ RUN pip install \
         numpy \
         scipy \
         pandas \
-        pika==0.13.1 \
+        pika \
         kafka-python \
         cloudpickle \
         ps-mem \
         tblib \
-        neat-python \
-        gym[box2d] \
 	diskcache \
-	msgpack
-
+	sklearn
 
 
 FROM python:3.8-buster
@@ -58,11 +54,6 @@ COPY lithops_lambda.zip ${FUNCTION_DIR}
 RUN unzip lithops_lambda.zip && rm lithops_lambda.zip
 
 # Put your dependencies here, using RUN pip install... or RUN apt install...
-# RUN apt-get update && \
-#     apt-get install -y \
-#         swig
-
-COPY poet_distributed poet_distributed
 
 ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
 CMD [ "__main__.lambda_handler" ]
