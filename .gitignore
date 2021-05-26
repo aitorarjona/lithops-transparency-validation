@@ -6,6 +6,7 @@
 # Archives
 *.zip
 *.bz2
+*.rar
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

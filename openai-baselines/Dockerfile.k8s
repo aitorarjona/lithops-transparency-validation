@@ -1,10 +1,19 @@
 FROM python:3.7-buster
   
-RUN apt-get update \
+RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list \
+    && apt-get update \
     && apt-get upgrade -y --no-install-recommends \
     && apt-get install -y --no-install-recommends \
         libgl1-mesa-glx \
         make \
+        g++ \
+        make \
+        cmake \
+        unzip \
+        unrar \
+        git \
+        zlib1g \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade setuptools six pip \
@@ -12,6 +21,7 @@ RUN pip install --upgrade setuptools six pip \
         flask \
         pika \
         glob2 \
+        cmake \
         ibm-cos-sdk \
         redis \
         requests \
@@ -21,16 +31,24 @@ RUN pip install --upgrade setuptools six pip \
         cloudpickle \
         ps-mem \
         tblib \
+        pynng \
         joblib \
         tqdm \
         seaborn \
         pyparsing \
+        atari-py \
         tensorflow==1.14.0 \
         tensorflow-gpu==1.14 \
         gym[atari]==0.15.7 \
         opencv-python==4.4.0.46
 
 ENV PYTHONUNBUFFERED TRUE
+
+RUN wget http://www.atarimania.com/roms/Roms.rar \
+    && unrar e Roms.rar \
+    && unzip ROMS.zip \
+    && python -m atari_py.import_roms ROMS \
+    && rm -r "HC ROMS.zip" ROMS ROMS.zip Roms.rar
 
 COPY baselines baselines
 
