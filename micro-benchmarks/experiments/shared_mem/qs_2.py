@@ -1,6 +1,6 @@
 # Sources: 
 # https://www.geeksforgeeks.org/iterative-quick-sort/
-# https://www.techiedelight.com/inplace-merge-two-sorted-arrays/
+# https://www.geeksforgeeks.org/merge-two-sorted-arrays/
 
 #
 # Optimization: copy array from shared memory, perform local sort and put the sorted
@@ -18,7 +18,7 @@ PROCESSES = 4
 random.seed(42)
 
 src = [random.randint(0, 100) for _ in range(ARR_SIZE)]
-arr = mp.Array('i', src)
+arr = mp.RawArray('i', src)
 
 
 def partition(arr, l, h):
@@ -72,29 +72,35 @@ def quick_sort(l, h):
 
 
 def merge(x_start, len_x, y_start, len_y):
-    x = arr[x_start:x_start+len_x]
-    y = arr[y_start:y_start+len_y]
+    arr1 = arr[x_start:x_start+len_x]
+    arr2 = arr[y_start:y_start+len_y]
+    n1, n2 = len(arr1), len(arr2)
+    arr3 = [None] * (n1 + n2)
+    i = 0
+    j = 0
+    k = 0
+ 
+    while i < n1 and j < n2:
+        if arr1[i] < arr2[j]:
+            arr3[k] = arr1[i]
+            k = k + 1
+            i = i + 1
+        else:
+            arr3[k] = arr2[j]
+            k = k + 1
+            j = j + 1
+     
+    while i < n1:
+        arr3[k] = arr1[i]
+        k = k + 1
+        i = i + 1
+ 
+    while j < n2:
+        arr3[k] = arr2[j]
+        k = k + 1
+        j = j + 1
     
-    m = len(x)
-    n = len(y)
- 
-    for i in range(m):
-        if x[i] > y[0]:
-            temp = x[i]
-            x[i] = y[0]
-            y[0] = temp
- 
-            first = y[0]
- 
-            k = 1
-            while k < n and y[k] < first:
-                y[k - 1] = y[k]
-                k = k + 1
- 
-            y[k - 1] = first
-    
-    arr[x_start:x_start+len_x] = x
-    arr[y_start:y_start+len_y] = y
+    arr[x_start:y_start+len_y] = arr3
     
 
 

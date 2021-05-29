@@ -1,6 +1,6 @@
 # Sources:
 # https://www.geeksforgeeks.org/iterative-quick-sort/
-# https://www.techiedelight.com/inplace-merge-two-sorted-arrays/
+# https://www.geeksforgeeks.org/merge-two-sorted-arrays/
 
 #
 # Optimization: use pipes instead of shared memory
