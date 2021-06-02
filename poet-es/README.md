@@ -76,7 +76,9 @@ diff -r poet-es/poet_distributed/poet_algo.py lithops-transparency-validation/ev
 
 ```python
 diff -r poet-es/poet_distributed/noise.py lithops-transparency-validation/evolution-strategies/poet_distributed/noise.py
-23,26c22,41
+19d18
+<         import multiprocessing
+23,26c22,43
 <         logger.info('Sampling {} random numbers with seed {}'.format(
 <             count, seed))
 <         self._shared_mem = multiprocessing.Array(ctypes.c_float, count)
@@ -94,11 +96,21 @@ diff -r poet-es/poet_distributed/noise.py lithops-transparency-validation/evolut
 >         # In fact, AWS Lambda does not mount /dev/shm to the lambda function runtime,
 >         # so this would actually raise an exception.
 > 
->         self.noise = np.random.RandomState(seed).randn(count).astype(np.float32)  # 64-bit to 32-bit conversion here
+>         generator = np.random.Generator(np.random.PCG64(seed))
+>         self.noise = generator.random(size=count, dtype=np.float32)
 > 
 >         # import multiprocessing
+>         # self.noise = np.random.RandomState(seed).randn(count).astype(np.float32)  # 64-bit to 32-bit conversion here
 >         # self._shared_mem = multiprocessing.Array(ctypes.c_float, count)
 >         # self.noise = np.ctypeslib.as_array(self._shared_mem.get_obj())
 >         
 >         #####################################################################
-```
+>         
+28,29d44
+<         self.noise[:] = np.random.RandomState(seed).randn(
+<             count)  # 64-bit to 32-bit conversion here
+36c51
+<         return stream.randint(0, len(self.noise) - dim + 1)
+\ No newline at end of file
+---
+>         return stream.randint(0, len(self.noise) - dim + 1)

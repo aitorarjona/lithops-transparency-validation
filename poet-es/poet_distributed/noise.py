@@ -31,9 +31,11 @@ class SharedNoiseTable(object):
         # In fact, AWS Lambda does not mount /dev/shm to the lambda function runtime,
         # so this would actually raise an exception.
 
-        self.noise = np.random.RandomState(seed).randn(count).astype(np.float32)  # 64-bit to 32-bit conversion here
+        generator = np.random.Generator(np.random.PCG64(seed))
+        self.noise = generator.random(size=count, dtype=np.float32)
 
         # import multiprocessing
+        # self.noise = np.random.RandomState(seed).randn(count).astype(np.float32)  # 64-bit to 32-bit conversion here
         # self._shared_mem = multiprocessing.Array(ctypes.c_float, count)
         # self.noise = np.ctypeslib.as_array(self._shared_mem.get_obj())
         
