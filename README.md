@@ -6,12 +6,12 @@ This repository contains the code of the experiments carried out in the validati
 
 ### Micro-benchmarks
 
-All micro-benchmarks code can be found in the [micro-benchmarks directory](./micro-bechmarks/)
+All micro-benchmarks code can be found in the [micro-benchmarks directory](./micro-benchmarks/)
 
 1. [Fork-join overhead](./micro-benchmarks/experiments/fork.py).
-2. [Network latency](./micro-benchmarks/experiments/latency.py) and [throughput](./micro-benchmarks/throughput-simple.py).
-3. [Computational performance](./micro-benchmarks/pi.py)
-4. [Disk performance](./micro-benchmarks/disc.py)
+2. [Network latency](./micro-benchmarks/experiments/latency.py) and [throughput](./micro-benchmarks/experiments/throughput-simple.py).
+3. [Computational performance](./micro-benchmarks/experiments/pi.py)
+4. [Disk performance](./micro-benchmarks/experiments/disc.py)
 5. [Shared memory performance](./micro-benchmarks/shared_mem)
 
 Further instructions on how to replicate the experiments and the parameters used can be found [here](./micro-benchmarks/README.md)
