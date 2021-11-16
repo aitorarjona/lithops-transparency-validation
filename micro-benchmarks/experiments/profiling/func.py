@@ -6,6 +6,7 @@ import cProfile, pstats
 BYTE_SIZE = 50_000_000
 RING_SIZE = 4
 HASH_LOOP_COUNT = 50
+ROUNDS = 5
 
 
 queues = [mp.Queue() for _ in range(RING_SIZE)]
@@ -15,7 +16,7 @@ def ring_worker(proc_id):
     profiler = cProfile.Profile()
     profiler.enable()
 
-    for i in range(RING_SIZE):
+    for i in range(ROUNDS):
         print(f"[{proc_id}] round {i}")
         data = bytes(BYTE_SIZE)
 
@@ -38,7 +39,7 @@ def all2all_worker(proc_id):
     profiler = cProfile.Profile()
     profiler.enable()
 
-    for i in range(RING_SIZE):
+    for i in range(ROUNDS):
         print(f"[{proc_id}] round {i}")
         data = bytes(BYTE_SIZE)
 
@@ -65,7 +66,7 @@ def all2all_worker(proc_id):
 
 
 def allreduce_master(worker_conns):
-    for i in range(RING_SIZE):
+    for i in range(ROUNDS):
         for conn in worker_conns:
             data = conn.recv()
         for conn in worker_conns:
@@ -76,7 +77,7 @@ def allreduce_worker(proc_id, mast_conn):
     profiler = cProfile.Profile()
     profiler.enable()
 
-    for i in range(RING_SIZE):
+    for i in range(ROUNDS):
         print(f"[{proc_id}] round {i}")
         data = bytes(BYTE_SIZE)
 
