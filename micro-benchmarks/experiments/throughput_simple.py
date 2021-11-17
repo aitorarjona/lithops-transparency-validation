@@ -1,6 +1,4 @@
-import os
 import time
-import hashlib
 import argparse
 import logging
 
@@ -11,7 +9,7 @@ def sender(pipe, dict_result, batches, batch_size):
     res = pipe.recv()
     print(res)
 
-    data = os.urandom(batch_size)
+    data = bytes(batch_size)
     print('Start sending...')
     t0 = time.time()
     for i in range(batches):
