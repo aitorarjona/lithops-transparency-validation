@@ -71,7 +71,17 @@ def all2all_worker(proc_id):
 
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats("cumtime")
-    stats.dump_stats(f"stats_{proc_id}.prof")
+    stats.dump_stats(f"/tmp/stats_{proc_id}.prof")
+
+    if LITHOPS:
+        import lithops.storage as storage
+
+        sto = storage.Storage()
+        with open(f"/tmp/stats_{proc_id}.prof", "rb") as f:
+            stat_data = f.read()
+            sto.put_object(
+                bucket="aitor-data", key=f"/tmp/stats_{proc_id}.prof", body=stat_data
+            )
 
 
 def allreduce_master(worker_conns):
@@ -100,4 +110,14 @@ def allreduce_worker(proc_id, mast_conn):
 
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats("cumtime")
-    stats.dump_stats(f"stats_{proc_id}.prof")
+    stats.dump_stats(f"/tmp/stats_{proc_id}.prof")
+
+    if LITHOPS:
+        import lithops.storage as storage
+
+        sto = storage.Storage()
+        with open(f"/tmp/stats_{proc_id}.prof", "rb") as f:
+            stat_data = f.read()
+            sto.put_object(
+                bucket="aitor-data", key=f"/tmp/stats_{proc_id}.prof", body=stat_data
+            )
