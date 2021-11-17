@@ -1,6 +1,7 @@
 import multiprocessing as mp
 import cProfile, pstats
-from func import ring_worker, all2all_worker, allreduce_master, allreduce_worker, RING_SIZE
+from func import ring_worker, all2all_worker, allreduce_master, allreduce_worker
+from config import *
 
 
 def ring():
@@ -36,4 +37,4 @@ if __name__ == "__main__":
 
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats("cumtime")
-    stats.dump_stats("stats_master.prof")
+    stats.dump_stats("/tmp/stats_master.prof")

@@ -1,12 +1,11 @@
 import hashlib
-import multiprocessing as mp
 import cProfile, pstats
+from config import *
 
-
-BYTE_SIZE = 50_000_000
-RING_SIZE = 4
-HASH_LOOP_COUNT = 50
-ROUNDS = 5
+if LITHOPS:
+    import lithops.multiprocessing as mp
+else:
+    import multiprocessing as mp
 
 
 queues = [mp.Queue() for _ in range(RING_SIZE)]
@@ -27,12 +26,22 @@ def ring_worker(proc_id):
         for _ in range(HASH_LOOP_COUNT):
             hash_.update(data)
         print(f"[{proc_id}]", hash_.hexdigest())
-    
+
     assert queues[proc_id].empty()
 
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats("cumtime")
-    stats.dump_stats(f"stats_{proc_id}.prof")
+    stats.dump_stats(f"/tmp/stats_{proc_id}.prof")
+
+    if LITHOPS:
+        import lithops.storage as storage
+
+        sto = storage.Storage()
+        with open(f"/tmp/stats_{proc_id}.prof", "rb") as f:
+            stat_data = f.read()
+            sto.put_object(
+                bucket="aitor-data", key=f"/tmp/stats_{proc_id}.prof", body=stat_data
+            )
 
 
 def all2all_worker(proc_id):
@@ -47,7 +56,7 @@ def all2all_worker(proc_id):
             if j == proc_id:
                 continue
             queues[j].put(data)
-        
+
         for j in range(RING_SIZE):
             if j == proc_id:
                 continue
@@ -57,7 +66,7 @@ def all2all_worker(proc_id):
         for _ in range(HASH_LOOP_COUNT):
             hash_.update(data)
         print(f"[{proc_id}]", hash_.hexdigest())
-    
+
     assert queues[proc_id].empty()
 
     profiler.disable()
@@ -88,7 +97,7 @@ def allreduce_worker(proc_id, mast_conn):
         for _ in range(HASH_LOOP_COUNT):
             hash_.update(data)
         print(f"[{proc_id}]", hash_.hexdigest())
-    
+
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats("cumtime")
     stats.dump_stats(f"stats_{proc_id}.prof")
