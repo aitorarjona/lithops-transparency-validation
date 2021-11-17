@@ -1,5 +1,6 @@
 import hashlib
 import cProfile, pstats
+import concurrent.futures
 from config import *
 
 if LITHOPS:
@@ -85,27 +86,36 @@ def all2all_worker(proc_id):
 
 
 def allreduce_master(worker_conns):
-    for i in range(ROUNDS):
-        for conn in worker_conns:
+    print('starting master')
+    
+    def _master(conn):
+        for i in range(ROUNDS):
             data = conn.recv()
-        for conn in worker_conns:
             conn.send(data)
+        
+    with concurrent.futures.ThreadPoolExecutor(max_workers=RING_SIZE) as p:
+        fts = []
+        for worker_conn in worker_conns:
+            ft = p.submit(_master, worker_conn)
+            fts.append(ft)
+        [ft.result() for ft in fts]
 
 
 def allreduce_worker(proc_id, mast_conn):
     profiler = cProfile.Profile()
     profiler.enable()
 
+    data = bytes(BYTE_SIZE)
     for i in range(ROUNDS):
         print(f"[{proc_id}] round {i}")
-        data = bytes(BYTE_SIZE)
-
-        mast_conn.send(data)
-        data = mast_conn.recv()
 
         hash_ = hashlib.sha512()
         for _ in range(HASH_LOOP_COUNT):
             hash_.update(data)
+        
+        mast_conn.send(hash_.hexdigest())
+        digest = mast_conn.recv()
+
         print(f"[{proc_id}]", hash_.hexdigest())
 
     profiler.disable()
