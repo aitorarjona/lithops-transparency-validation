@@ -87,7 +87,7 @@ def all2all_worker(proc_id):
 
 def allreduce_master(worker_conns):
     print('starting master')
-    
+
     def _master(conn):
         for i in range(ROUNDS):
             data = conn.recv()
@@ -106,6 +106,7 @@ def allreduce_worker(proc_id, mast_conn):
     profiler.enable()
 
     data = bytes(BYTE_SIZE)
+    payload = bytes(PAYLOAD_SIZE)
     for i in range(ROUNDS):
         print(f"[{proc_id}] round {i}")
 
@@ -113,8 +114,8 @@ def allreduce_worker(proc_id, mast_conn):
         for _ in range(HASH_LOOP_COUNT):
             hash_.update(data)
         
-        mast_conn.send(hash_.hexdigest())
-        digest = mast_conn.recv()
+        mast_conn.send(payload)
+        _ = mast_conn.recv()
 
         print(f"[{proc_id}]", hash_.hexdigest())
 
