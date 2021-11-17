@@ -1,7 +1,11 @@
-import multiprocessing as mp
 import cProfile, pstats
 from func import ring_worker, all2all_worker, allreduce_master, allreduce_worker
 from config import *
+
+if LITHOPS:
+    import lithops.multiprocessing as mp
+else:
+    import multiprocessing as mp
 
 
 def ring():
