@@ -40,7 +40,7 @@ def ring_worker(proc_id):
         with open(f"/tmp/stats_{proc_id}.prof", "rb") as f:
             stat_data = f.read()
             sto.put_object(
-                bucket="aitor-data", key=f"/tmp/stats_{proc_id}.prof", body=stat_data
+                bucket="aitor-data", key=f"tmp/stats_{proc_id}.prof", body=stat_data
             )
 
 
@@ -80,7 +80,7 @@ def all2all_worker(proc_id):
         with open(f"/tmp/stats_{proc_id}.prof", "rb") as f:
             stat_data = f.read()
             sto.put_object(
-                bucket="aitor-data", key=f"/tmp/stats_{proc_id}.prof", body=stat_data
+                bucket="aitor-data", key=f"tmp/stats_{proc_id}.prof", body=stat_data
             )
 
 
@@ -119,5 +119,5 @@ def allreduce_worker(proc_id, mast_conn):
         with open(f"/tmp/stats_{proc_id}.prof", "rb") as f:
             stat_data = f.read()
             sto.put_object(
-                bucket="aitor-data", key=f"/tmp/stats_{proc_id}.prof", body=stat_data
+                bucket="aitor-data", key=f"tmp/stats_{proc_id}.prof", body=stat_data
             )
