@@ -3,7 +3,7 @@ from func import ring_worker, all2all_worker, allreduce_master, allreduce_worker
 from config import *
 import multiprocessing as mp_
 import time
-import math
+import logging
 import json
 import statistics
 
