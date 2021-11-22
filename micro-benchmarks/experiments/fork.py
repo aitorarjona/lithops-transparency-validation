@@ -37,17 +37,22 @@ if __name__ == '__main__':
 
     t1 = time.time()
     if args.fork == 'processes':
-        procs = []
+        if args.workers == 1:
+            p = mp.Process(target=worker_function, args=(args.sleep, ))
+            p.start()
+            p.join()
+        else:
+            procs = []
 
-        def proc_spawn(i):
-            proc = mp.Process(target=worker_function, args=(args.sleep, ))
-            proc.start()
-            procs.append(proc)
+            def proc_spawn(i):
+                proc = mp.Process(target=worker_function, args=(args.sleep, ))
+                proc.start()
+                procs.append(proc)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as p:
-            p.map(proc_spawn, range(args.workers))
+            with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as p:
+                p.map(proc_spawn, range(args.workers))
 
-        [proc.join() for proc in procs]
+            [proc.join() for proc in procs]
     elif args.fork == 'pool':
         p = mp.Pool(processes=args.workers)
         map_result = p.map_async(worker_function, [args.sleep] * args.workers)
