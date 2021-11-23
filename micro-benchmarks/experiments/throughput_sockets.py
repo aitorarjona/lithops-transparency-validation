@@ -3,6 +3,7 @@ import struct
 import argparse
 import time
 import socket
+import io
 
 
 def client(server, server_port, payload_sz):
@@ -29,22 +30,25 @@ def server(bind_addr, sever_port):
     serversocket.bind((bind_addr, sever_port))
     serversocket.listen(1)
 
+    buff = io.BytesIO()
     (clientsocket, address) = serversocket.accept()
     try:
         bs = clientsocket.recv(8)
         (length,) = struct.unpack('>Q', bs)
         print(length)
-        data = b''
+        data_recv = 0
         t0 = time.time()
-        while len(data) < length:
-            to_read = length - len(data)
+        while data_recv < length:
+            to_read = length - data_recv
             print(to_read)
-            data += clientsocket.recv(length if to_read > length else to_read)
+            data = clientsocket.recv(length if to_read > length else to_read)
+            data_recv += len(data)
+            buff.write(data)
     finally:
         t1 = time.time()
         clientsocket.shutdown(socket.SHUT_WR)
         clientsocket.close()
-    print(len(data))
+    print(buff.tell())
     
     td = t1 - t0
     print(td)
