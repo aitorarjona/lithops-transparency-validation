@@ -23,6 +23,8 @@ def client(server, server_port, payload_sz):
     throughput = (payload_sz / td) / 1_000_000
     print('Throughput = {} MB/s'.format(throughput))
 
+    return {'throughput': throughput, 'td': td}
+
 
 def server(bind_addr, sever_port):
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -60,7 +62,7 @@ def server(bind_addr, sever_port):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--kind', required=True, choices=['server', 'client'])
+    parser.add_argument('--kind', required=True, choices=['server', 'client', 'lithops-client'])
     parser.add_argument('--host', required=True, type=str)
     parser.add_argument('--port', required=True, type=int)
     parser.add_argument('--payload', type=int, default=1024)
@@ -70,5 +72,11 @@ if __name__ == '__main__':
         server(args.host, args.port)
     elif args.kind == 'client':
         client(args.host, args.port, args.payload)
+    elif args.kind == 'lithops-client':
+        import lithops
+        fexec = lithops.FunctionExecutor()
+        fexec.call_async(client, (args.host, args.port, args.payload))
+        res = fexec.get_result()
+        print(res)
     else:
         raise Exception(args.kind)
